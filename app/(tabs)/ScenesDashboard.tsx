@@ -24,12 +24,10 @@ const ScenesDashboard = () => {
   const navigation = useNavigation<ScenesDashboardNavigationProp>();
   const { filmId } = route.params;
   const [loading, setLoading] = useState(true);
-
   const [film, setFilm] = useState<Film | null>(null);
   const [scenes, setScenes] = useState<Scene[]>([]);
-
-  const [editingScene, setEditingScene] = useState<Scene | null>(null);
-  const [addingScene, setAddingScene] = useState(false);
+  const [editingScene, setEditingScene] = React.useState<Scene | null>(null);
+  const [addingScene, setAddingScene] = React.useState(false);
 
   useEffect(() => {
     const fetchFilm = async () => {
@@ -47,7 +45,7 @@ const ScenesDashboard = () => {
   useEffect(() => {
     const fetchScenes = async () => {
       try {
-        const response = await api.get<Scene[]>("/scene"); // Cambia el endpoint según tu backend
+        const response = await api.get<Scene[]>(`/scene/film/${filmId}`);
         setScenes(response.data);
       } catch (error) {
         console.error(error);
@@ -57,7 +55,7 @@ const ScenesDashboard = () => {
     };
 
     fetchScenes();
-  }, []);
+  }, [filmId]);
 
   const saveScene = (updatedScene: Scene) => {
     setScenes(
@@ -134,12 +132,12 @@ const ScenesDashboard = () => {
                   <Button
                     theme="alt2"
                     icon={Pencil}
-                    onPress={() => setEditingScene(scene)}
+                    onPressIn={() => setEditingScene(scene)}
                   />
                   <Button
                     theme="alt2"
                     icon={Trash}
-                    onPress={() => deleteScene(scene.id)}
+                    onPressIn={() => deleteScene(scene.id)}
                   />
                 </View>
               </YStack>
@@ -177,6 +175,7 @@ const ScenesDashboard = () => {
             onRequestClose={() => setAddingScene(false)}
           >
             <AddSceneModal
+              filmId={filmId}
               onSave={addScene}
               onClose={() => setAddingScene(false)}
             />
@@ -188,17 +187,3 @@ const ScenesDashboard = () => {
 };
 
 export default ScenesDashboard;
-
-// const saveScene = (updatedScene: Scene) => {
-//   setScenes(
-//     scenes.map((scene) =>
-//       scene.id === updatedScene.id ? updatedScene : scene
-//     )
-//   );
-//   setEditingScene(null);
-// };
-
-// const addScene = (newScene: Scene) => {
-//   setScenes([...scenes, { ...newScene, id: scenes.length + 1 }]);
-//   setAddingScene(false);
-// };

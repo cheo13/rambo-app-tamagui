@@ -5,9 +5,11 @@ import { YStack, Input, Button } from "tamagui";
 import api from "services/api";
 
 const AddSceneModal = ({
+  filmId,
   onSave,
   onClose,
 }: {
+  filmId: number;
   onSave: (scene: Scene) => void;
   onClose: () => void;
 }) => {
@@ -24,6 +26,7 @@ const AddSceneModal = ({
         description,
         location,
         minutes: parseInt(minutes, 10),
+        filmId: filmId,
       };
 
       const response = await api.post("/scene", newScene);

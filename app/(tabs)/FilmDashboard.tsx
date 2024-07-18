@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Modal, ScrollView, TouchableOpacity } from "react-native";
-import { YStack, Button, Spinner } from "tamagui";
+import { YStack, Button, Spinner, Image } from "tamagui";
 import { Pencil, Trash, Plus } from "@tamagui/lucide-icons";
 import EditFilmModal from "components/EditFilm";
 import AddFilmModal from "components/AddFilm";
@@ -59,6 +59,7 @@ const FilmDashboard = () => {
   if (loading) {
     return <Spinner color="$purple1" />;
   }
+
   return (
     <View style={{ flex: 1 }}>
       <Text style={{ fontSize: 24, fontWeight: "bold", color: "#fff" }}>
@@ -84,10 +85,31 @@ const FilmDashboard = () => {
                 {film.title}
               </Text>
               <Text style={{ color: "#fff" }}>{film.director}</Text>
-              <Text style={{ color: "#fff" }}>{film.releaseDate}</Text>
+              <Text style={{ color: "#fff" }}>{film.releaseDate} </Text>
               <Text style={{ color: "#fff" }}>{film.duration} min</Text>
               <Text style={{ color: "#fff" }}>{film.languages}</Text>
               <Text style={{ color: "#fff" }}>{film.genre}</Text>
+              {film.imageUrl ? (
+                <Image
+                  source={{ uri: film.imageUrl }}
+                  style={{
+                    width: 300,
+                    height: 250,
+                    marginVertical: 8,
+                    borderRadius: 8,
+                    alignSelf: "center",
+                  }}
+                  onError={(errors) =>
+                    console.log(
+                      "Error loading image:",
+                      errors.nativeEvent.error
+                    )
+                  }
+                />
+              ) : (
+                <Text style={{ color: "#fff" }}>No image available</Text>
+              )}
+
               <Text style={{ color: "#fff" }}>{film.mainCharacter}</Text>
               <View
                 style={{
@@ -99,12 +121,12 @@ const FilmDashboard = () => {
                 <Button
                   theme="alt2"
                   icon={Pencil}
-                  onPress={() => setEditingFilm(film)}
+                  onPressIn={() => setEditingFilm(film)}
                 />
                 <Button
                   theme="alt2"
                   icon={Trash}
-                  onPress={() => deleteFilm(film.id)}
+                  onPressIn={() => deleteFilm(film.id)}
                 />
               </View>
             </YStack>

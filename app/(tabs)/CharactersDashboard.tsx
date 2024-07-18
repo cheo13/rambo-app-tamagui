@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, Modal } from "react-native";
-import { YStack, Button } from "tamagui";
+import { YStack, Button, Spinner } from "tamagui";
 import { Pencil, Trash, Plus } from "@tamagui/lucide-icons";
 import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
 import { Character, Scene } from "interfaces/models";
@@ -24,59 +24,31 @@ const CharactersDashboard = () => {
   const navigation = useNavigation<CharactersDashboardNavigationProp>();
   const { sceneId } = route.params;
   const [loading, setLoading] = useState(true);
-
   const [scene, setScene] = useState<Scene | null>(null);
-  const [characters, setCharacters] = useState<Character[]>([
-    {
-      id: 1,
-      name: "Character 1",
-      role: "Role 1",
-      actor: "Actor 1",
-    },
-    {
-      id: 2,
-      name: "Character 2",
-      role: "Role 2",
-      actor: "Actor 2",
-    },
-    {
-      id: 3,
-      name: "Character 3",
-      role: "Role 3",
-      actor: "Actor 3",
-    },
-    {
-      id: 4,
-      name: "Character 4",
-      role: "Role 4",
-      actor: "Actor 4",
-    },
-  ]);
-
-  const [editingCharacter, setEditingCharacter] = useState<Character | null>(
-    null
-  );
-  const [addingCharacter, setAddingCharacter] = useState(false);
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [editingCharacter, setEditingCharacter] =
+    React.useState<Character | null>(null);
+  const [addingCharacter, setAddingCharacter] = React.useState(false);
 
   useEffect(() => {
-    const fetchScene = async () => {
-      const fetchedScene: Scene = {
-        id: sceneId,
-        title: "Scene 1",
-        description: "Description 1",
-        location: "Location 1",
-        minutes: 5,
-      };
-      setScene(fetchedScene);
+    const fetchScenes = async () => {
+      try {
+        const response = await api.get<Scene>(`/scene/${sceneId}`);
+        setScene(response.data);
+      } catch (error) {
+        console.error(error);
+      }
     };
 
-    fetchScene();
+    fetchScenes();
   }, [sceneId]);
 
   useEffect(() => {
     const fetchCharacter = async () => {
       try {
-        const response = await api.get<Character[]>("/characters"); // Cambia el endpoint según tu backend
+        const response = await api.get<Character[]>(
+          `/characters/scene/${sceneId}`
+        );
         setCharacters(response.data);
       } catch (error) {
         console.error(error);
@@ -86,28 +58,32 @@ const CharactersDashboard = () => {
     };
 
     fetchCharacter();
-  }, []);
+  }, [sceneId]);
+
   const saveCharacter = (updatedCharacter: Character) => {
     setCharacters(
       characters.map((character) =>
         character.id === updatedCharacter.id ? updatedCharacter : character
       )
     );
-    setEditingCharacter(null);
   };
 
   const addCharacter = (newCharacter: Character) => {
-    setCharacters([
-      ...characters,
-      { ...newCharacter, id: characters.length + 1 },
-    ]);
-    setAddingCharacter(false);
+    setCharacters([...characters, newCharacter]);
   };
 
-  const deleteCharacter = (id: number) => {
-    setCharacters(characters.filter((character) => character.id !== id));
+  const deleteCharacter = async (id: number) => {
+    try {
+      await api.delete(`/characters/${id}`);
+      setCharacters(characters.filter((character) => character.id !== id));
+    } catch (error) {
+      console.error("Error deleting character:", error);
+    }
   };
 
+  if (loading) {
+    return <Spinner color="$purple1" />;
+  }
   return (
     <View style={{ flex: 1 }}>
       <YStack space="$4" padding="$4" style={{ flex: 1 }}>
@@ -146,12 +122,12 @@ const CharactersDashboard = () => {
                 <Button
                   theme="alt2"
                   icon={Pencil}
-                  onPress={() => setEditingCharacter(character)}
+                  onPressIn={() => setEditingCharacter(character)}
                 />
                 <Button
                   theme="alt2"
                   icon={Trash}
-                  onPress={() => deleteCharacter(character.id)}
+                  onPressIn={() => deleteCharacter(character.id)}
                 />
               </View>
             </YStack>
@@ -188,6 +164,7 @@ const CharactersDashboard = () => {
             onRequestClose={() => setAddingCharacter(false)}
           >
             <AddCharacterModal
+              sceneId={sceneId}
               onSave={addCharacter}
               onClose={() => setAddingCharacter(false)}
             />

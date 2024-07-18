@@ -16,6 +16,7 @@ export interface Scene {
   description: string;
   location: string;
   minutes: number;
+  filmId: number;
 }
 
 export interface Character {
@@ -23,4 +24,5 @@ export interface Character {
   name: string;
   role: string;
   actor: string;
+  sceneId: number;
 }

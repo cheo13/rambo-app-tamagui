@@ -1,5 +1,5 @@
 export type RootStackParamList = {
-  FilmDashboard: undefined;
+  FilmDashboard: { id: number };
   ScenesDashboard: { filmId: number };
   CharactersDashboard: { sceneId: number };
 };
