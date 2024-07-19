@@ -1,13 +1,20 @@
-import { Link, Tabs, Stack } from "expo-router";
-import { Button, useTheme } from "tamagui";
-import { Atom, AudioWaveform, Film } from "@tamagui/lucide-icons";
+import { Stack } from "expo-router";
 
 export default function TabLayout() {
   return (
     <Stack>
-      <Stack.Screen name="FilmDashboard" />
-      <Stack.Screen name="ScenesDashboard" />
-      <Stack.Screen name="CharactersDashboard" />
+      <Stack.Screen
+        name="FilmDashboard"
+        options={{ title: "Films Dashboard", headerTitleAlign: "center" }}
+      />
+      <Stack.Screen
+        name="ScenesDashboard"
+        options={{ title: "Scenes Dashboard" }}
+      />
+      <Stack.Screen
+        name="CharactersDashboard"
+        options={{ title: "Characters Dashboard" }}
+      />
     </Stack>
   );
 }

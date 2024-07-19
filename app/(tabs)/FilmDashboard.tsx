@@ -9,6 +9,7 @@ import { useNavigation } from "expo-router";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "app/navigationTypes";
 import api from "services/api";
+import { format } from "date-fns";
 
 type FilmDashboardNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -62,10 +63,6 @@ const FilmDashboard = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <Text style={{ fontSize: 24, fontWeight: "bold", color: "#fff" }}>
-        DASHBOARD
-      </Text>
-      <Text style={{ fontSize: 18, color: "#fff" }}>FILMS</Text>
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         {films.map((film) => (
           <TouchableOpacity
@@ -79,13 +76,24 @@ const FilmDashboard = () => {
               padding="$2"
               borderRadius="$2"
               backgroundColor="#7A0E4D"
-              marginBottom={12}
+              marginBottom={25}
             >
-              <Text style={{ fontSize: 16, fontWeight: "bold", color: "#fff" }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  color: "#fff",
+                  alignSelf: "center",
+                }}
+              >
                 {film.title}
               </Text>
               <Text style={{ color: "#fff" }}>{film.director}</Text>
-              <Text style={{ color: "#fff" }}>{film.releaseDate} </Text>
+
+              <Text style={{ color: "#fff" }}>
+                {format(new Date(film.releaseDate), "yyyy-MM-dd")}
+              </Text>
+
               <Text style={{ color: "#fff" }}>{film.duration} min</Text>
               <Text style={{ color: "#fff" }}>{film.languages}</Text>
               <Text style={{ color: "#fff" }}>{film.genre}</Text>
@@ -94,7 +102,7 @@ const FilmDashboard = () => {
                   source={{ uri: film.imageUrl }}
                   style={{
                     width: 300,
-                    height: 250,
+                    height: 350,
                     marginVertical: 8,
                     borderRadius: 8,
                     alignSelf: "center",
@@ -110,7 +118,9 @@ const FilmDashboard = () => {
                 <Text style={{ color: "#fff" }}>No image available</Text>
               )}
 
-              <Text style={{ color: "#fff" }}>{film.mainCharacter}</Text>
+              <Text style={{ color: "#fff", alignSelf: "flex-end" }}>
+                {film.mainCharacter}
+              </Text>
               <View
                 style={{
                   flexDirection: "row",
@@ -127,6 +137,7 @@ const FilmDashboard = () => {
                   theme="alt2"
                   icon={Trash}
                   onPressIn={() => deleteFilm(film.id)}
+                  position="relative"
                 />
               </View>
             </YStack>
